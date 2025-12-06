@@ -1,0 +1,4 @@
+The src/assets directory is typically used for storing static assets such as images, fonts, or other files that the application may need. Since you haven't specified any particular assets to include, I will leave this directory intentionally blank.
+
+src/assets
+// This file is intentionally left blank.

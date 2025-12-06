@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Points of Interest in Vietnam</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="/src/styles/app.css">
+</head>
+<body>
+    <div id="app">
+        <header>
+            <div class="header-content">
+                <h1>🗺️ Tìm Điểm Du Lịch Việt Nam</h1>
+                <div id="authPanel"></div>
+            </div>
+        </header>
+        <div class="container">
+            <div class="search-section">
+                <div id="searchBar"></div>
+            </div>
+            <div class="content">
+                <div id="weatherPanel" class="weather-panel"></div>
+                <div id="map" class="map"></div>
+                <div id="poiList" class="poi-list"></div>
+            </div>
+            <div id="translatePanel"></div>
+        </div>
+    </div>
+    <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
