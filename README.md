@@ -39,7 +39,6 @@ nano backend/.env
 
 Trong file `.env`, tìm và thay thế:
 - `your_openweathermap_key_here` → API key thật của bạn
-- `your_google_translate_key_here` → API key thật của bạn
 - `your_huggingface_token_here` → Token thật của bạn
 
 **Xem mục "🔑 Hướng dẫn lấy API Keys" bên dưới để biết cách lấy từng key.**
@@ -80,23 +79,7 @@ Mở trình duyệt: http://localhost:......
    OPENWEATHERMAP_API_KEY=abc123your_key_here
    ```
 
-### 2. Google Translate API Key (Bắt buộc - cho Translation)
-
-1. Truy cập: https://console.cloud.google.com/
-2. Tạo project mới hoặc chọn project có sẵn
-3. Bật API:
-   - Vào **APIs & Services** > **Library**
-   - Tìm "Cloud Translation API"
-   - Click **ENABLE**
-4. Tạo credentials:
-   - Vào **APIs & Services** > **Credentials**
-   - Click **CREATE CREDENTIALS** > **API Key**
-   - Copy API key và paste vào `backend/.env`:
-   ```env
-   GOOGLE_TRANSLATE_API_KEY=AIzaSy...your_key_here
-   ```
-
-### 3. Hugging Face Token (Bắt buộc - cho AI Chat)
+### 2. Hugging Face Token (Bắt buộc - cho AI Chat)
 
 1. Đăng ký: https://huggingface.co/join
 2. Vào settings: https://huggingface.co/settings/tokens
@@ -107,21 +90,39 @@ Mở trình duyệt: http://localhost:......
    HF_API_TOKEN=hf_abc...your_token_here
    ```
 
-### 4. Firebase (Tùy chọn - cho Google Login)
+### 3. Firebase Config (Bắt buộc - cho Google Login)
 
-1. Vào: https://console.firebase.google.com/
-2. Tạo project mới
-3. Thêm web app (icon **</>**)
-4. Bật Authentication > Google Sign-in
-5. Copy config và paste vào `src/config/apiConfig.ts`:
-   ```typescript
-   export const FIREBASE_CONFIG = {
-       apiKey: "AIza...",
-       authDomain: "your-app.firebaseapp.com",
-       projectId: "your-project-id",
-       // ...
-   };
-   ```
+**Bước 1: Tạo Firebase Project**
+1. Truy cập: https://console.firebase.google.com/
+2. Click **"Add project"** hoặc **"Create a project"**
+3. Đặt tên project và hoàn tất setup
+
+**Bước 2: Thêm Web App**
+1. Trong Firebase Console, click icon **</>** (Web)
+2. Đặt tên app và click **"Register app"**
+3. Copy toàn bộ config (firebaseConfig object)
+
+**Bước 3: Bật Google Sign-In**
+1. Vào **Authentication** > **Sign-in method**
+2. Click **Google**
+3. Bật **Enable**
+4. Chọn **Project support email**
+5. Click **Save**
+
+**Bước 4: Cập nhật Frontend Config**
+
+Mở file `src/config/apiConfig.ts` và thay thế:
+
+```typescript
+export const FIREBASE_CONFIG = {
+    apiKey: "AIza...",  // Từ Firebase Console
+    authDomain: "your-app.firebaseapp.com",
+    projectId: "your-project-id",
+    storageBucket: "your-app.appspot.com",
+    messagingSenderId: "123456789",
+    appId: "1:123456:web:abc123"
+};
+```
 
 ---
 
@@ -136,14 +137,12 @@ File `backend/.env` đã có sẵn trong project với placeholders. Bạn chỉ
 **Ví dụ - TRƯỚC khi sửa:**
 ```env
 OPENWEATHERMAP_API_KEY=your_openweathermap_key_here
-GOOGLE_TRANSLATE_API_KEY=your_google_translate_key_here
 HF_API_TOKEN=your_huggingface_token_here
 ```
 
 **SAU khi sửa:**
 ```env
 OPENWEATHERMAP_API_KEY=abc123def456
-GOOGLE_TRANSLATE_API_KEY=AIzaSyDxxxYYYzzz
 HF_API_TOKEN=hf_abcdefghijklmnop
 ```
 
@@ -163,7 +162,6 @@ Sau khi setup xong, kiểm tra:
      "status": "healthy",
      "services": {
        "openweathermap": true,
-       "google_translate": true,
        "huggingface": true
      }
    }
@@ -184,9 +182,10 @@ Sau khi setup xong, kiểm tra:
 - Token đã hết hạn → Tạo token mới
 - Token không có quyền → Tạo token với type **Read**
 
-### Lỗi: Translation failed
-- Google Translate API chưa được bật trong Google Cloud Console
-- API key không đúng hoặc bị giới hạn
+### Lỗi: Firebase/Google Login không hoạt động
+- Kiểm tra FIREBASE_CONFIG trong `src/config/apiConfig.ts` đúng chưa
+- Đảm bảo Google Sign-In đã được Enable trong Firebase Console
+- Kiểm tra domain của app đã được thêm vào Authorized domains
 
 ---
 

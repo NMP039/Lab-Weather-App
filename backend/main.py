@@ -37,7 +37,6 @@ app.add_middleware(
 
 # Environment variables
 OPENWEATHERMAP_API_KEY = os.getenv("OPENWEATHERMAP_API_KEY", "")
-GOOGLE_TRANSLATE_API_KEY = os.getenv("GOOGLE_TRANSLATE_API_KEY", "")
 HF_API_TOKEN = os.getenv("HF_API_TOKEN", "")
 HF_MODEL = os.getenv("HF_MODEL", "meta-llama/Llama-3.2-3B-Instruct")
 
@@ -120,7 +119,6 @@ async def health_check():
         "timestamp": datetime.now().isoformat(),
         "services": {
             "openweathermap": bool(OPENWEATHERMAP_API_KEY),
-            "google_translate": bool(GOOGLE_TRANSLATE_API_KEY),
             "huggingface": bool(HF_API_TOKEN)
         }
     }
@@ -132,29 +130,30 @@ async def health_check():
 
 @app.post("/api/translate", response_model=TranslateResponse)
 async def translate_text(request: TranslateRequest):
-    """Proxy Google Translate API"""
-    if not GOOGLE_TRANSLATE_API_KEY:
-        raise HTTPException(status_code=500, detail="Google Translate API key not configured")
-    
+    """Proxy Google Translate (sử dụng free endpoint)"""
     try:
-        url = f"https://translation.googleapis.com/language/translate/v2"
+        url = f"https://translate.googleapis.com/translate_a/single"
         params = {
-            "key": GOOGLE_TRANSLATE_API_KEY,
-            "q": request.text,
-            "source": request.source_lang,
-            "target": request.target_lang,
-            "format": "text"
+            "client": "gtx",
+            "sl": request.source_lang,
+            "tl": request.target_lang,
+            "dt": "t",
+            "q": request.text
         }
         
         async with httpx.AsyncClient() as client:
-            response = await client.post(url, params=params, timeout=10.0)
+            response = await client.get(url, params=params, timeout=10.0)
             response.raise_for_status()
             data = response.json()
         
-        # Parse official API response
-        translation = data["data"]["translations"][0]
-        translated_text = translation["translatedText"]
-        detected_lang = translation.get("detectedSourceLanguage", request.source_lang)
+        # Parse response
+        translated_text = ""
+        if data[0]:
+            for item in data[0]:
+                if item[0]:
+                    translated_text += item[0]
+        
+        detected_lang = data[2] if len(data) > 2 else request.source_lang
         
         return TranslateResponse(
             original_text=request.text,
