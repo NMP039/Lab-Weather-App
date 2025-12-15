@@ -4,6 +4,7 @@ import { POIList } from './components/POIList';
 import { WeatherPanel } from './components/WeatherPanel';
 import { TranslatePanel } from './components/TranslatePanel';
 import { AuthPanel } from './components/AuthPanel';
+import { ChatPanel } from './components/ChatPanel';
 import { geocodeLocation } from './services/geocode';
 import { fetchPOIs } from './services/poiService';
 import { getCurrentWeather, getWeatherForecast } from './services/weatherService';
@@ -16,6 +17,7 @@ export class App {
     private weatherPanel: WeatherPanel;
     private translatePanel: TranslatePanel;
     private authPanel: AuthPanel;
+    private chatPanel: ChatPanel;
     private loadingElement: HTMLElement;
 
     constructor() {
@@ -34,6 +36,10 @@ export class App {
         this.weatherPanel = new WeatherPanel(weatherContainer);
         this.translatePanel = new TranslatePanel(translateContainer);
         this.authPanel = new AuthPanel(authContainer);
+        
+        // Initialize and append ChatPanel
+        this.chatPanel = new ChatPanel();
+        document.body.appendChild(this.chatPanel.getElement());
     }
 
     private createLoadingElement(): HTMLElement {

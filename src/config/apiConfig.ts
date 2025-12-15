@@ -1,10 +1,18 @@
 /**
  * ===========================================
- * CẤU HÌNH API KEYS
+ * CẤU HÌNH API
  * ===========================================
  * 
- * Xem README.md để biết cách lấy từng API key.
+ * Backend API URL: Thay đổi khi dùng ngrok/pinggy hoặc deploy
+ * Firebase: Giữ nguyên cho authentication
  */
+
+// ===========================================
+// BACKEND API URL
+// ===========================================
+// Trong development với ngrok/pinggy, thay đổi URL này
+// Ví dụ: https://abc123.ngrok.io hoặc https://randomid.a.pinggy.online
+export const BACKEND_API_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:8000';
 
 // ===========================================
 // FIREBASE CONFIGURATION
@@ -20,8 +28,6 @@ export const FIREBASE_CONFIG = {
 };
 
 // ===========================================
-// OPENWEATHERMAP API
+// DEPRECATED - API keys giờ được quản lý ở backend
 // ===========================================
-// Đăng ký tại: https://openweathermap.org/api
-// Lấy key tại: https://home.openweathermap.org/api_keys
-export const OPENWEATHERMAP_API_KEY = "YOUR_OPENWEATHERMAP_API_KEY";
+// export const OPENWEATHERMAP_API_KEY = "...";

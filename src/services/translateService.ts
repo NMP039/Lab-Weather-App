@@ -1,8 +1,9 @@
 import { TranslationResult } from '../types/translator';
+import { BACKEND_API_URL } from '../config/apiConfig';
 
 /**
- * Dịch văn bản sử dụng Google Translate API miễn phí
- * Sử dụng endpoint công khai của Google Translate
+ * Dịch văn bản thông qua backend API
+ * Backend sẽ gọi Google Translate API
  */
 export async function translateText(text: string, sourceLang: string, targetLang: string): Promise<TranslationResult | null> {
     if (!text.trim()) {
@@ -10,11 +11,17 @@ export async function translateText(text: string, sourceLang: string, targetLang
     }
 
     try {
-        // Sử dụng Google Translate API endpoint công khai
-        // API này miễn phí nhưng không có rate limit chính thức
-        const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=${sourceLang}&tl=${targetLang}&dt=t&q=${encodeURIComponent(text)}`;
-        
-        const response = await fetch(url);
+        const response = await fetch(`${BACKEND_API_URL}/api/translate`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                text: text,
+                source_lang: sourceLang,
+                target_lang: targetLang
+            })
+        });
         
         if (!response.ok) {
             throw new Error('Translation request failed');
@@ -22,25 +29,11 @@ export async function translateText(text: string, sourceLang: string, targetLang
 
         const data = await response.json();
         
-        // Parse kết quả từ API
-        // Format: [[[translated_text, original_text, null, null, 0]], null, source_lang]
-        let translatedText = '';
-        
-        if (data[0]) {
-            for (const item of data[0]) {
-                if (item[0]) {
-                    translatedText += item[0];
-                }
-            }
-        }
-
-        const detectedSourceLang = data[2] || sourceLang;
-
         return {
-            originalText: text,
-            translatedText: translatedText,
-            sourceLanguage: detectedSourceLang,
-            targetLanguage: targetLang
+            originalText: data.original_text,
+            translatedText: data.translated_text,
+            sourceLanguage: data.source_language,
+            targetLanguage: data.target_language
         };
     } catch (error) {
         console.error('Translation error:', error);
